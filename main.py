@@ -5,6 +5,7 @@ if __name__ == "__main__":
     test_schema = """
     CREATE TABLE users (
         user_id INT PRIMARY KEY,
+        name VARCHAR(100),
         signup_date DATE,
         country VARCHAR(50)
     );
@@ -13,11 +14,12 @@ if __name__ == "__main__":
         order_id INT PRIMARY KEY,
         user_id INT,
         amount DECIMAL(10, 2),
-        created_at DATETIME
+        created_at DATETIME,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
     );
     """
 
-    sqlGenerator = MySQLGenerator(seed=53, temperature=2.0)
+    sqlGenerator = MySQLGenerator(seed=53, temperature=1.2)
 
     print("--- Generating Queries ---")
     df = sqlGenerator.generate_queries(

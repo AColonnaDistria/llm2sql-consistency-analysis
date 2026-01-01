@@ -37,7 +37,7 @@ You are an expert MySQL Data Engineer. Your goal is to convert natural language 
                 sys_prompt = sys_prompt.format(schema = schema)
             
             query = self.prompt_manager.get_response(
-                system_prompt = self.system_prompt, 
+                system_prompt = sys_prompt, 
                 user_prompt = user_prompt,
                 temperature = self.temperature
             )

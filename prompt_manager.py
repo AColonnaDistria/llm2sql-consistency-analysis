@@ -10,13 +10,16 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 class PromptManager:
-    def __init__(self, api_key: str = OPENAI_API_KEY, seed: int = 0, keeps_cache: bool = True):
+    def __init__(self, api_key: str = OPENAI_API_KEY, seed: int = 0, keeps_cache: bool = True, max_tokens: int = 600, timeout: float = 30.0):
         self.api_key = api_key
         self.client = openai.OpenAI(api_key=api_key)
         self.keeps_cache = keeps_cache
 
         self._seed = seed
         self._iteration = 0
+
+        self._max_tokens = max_tokens
+        self._timeout = timeout
 
         if self.keeps_cache:
             self.cache = Cache('cache/openai_cache')
@@ -71,7 +74,9 @@ class PromptManager:
         response = self.client.chat.completions.create(
             model=model,
             messages=messages,
-            temperature=temperature
+            max_tokens=self._max_tokens,
+            timeout=self._timeout,
+            temperature=temperature,
         )
         result = response.choices[0].message.content
 
