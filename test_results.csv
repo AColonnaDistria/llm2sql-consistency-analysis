@@ -1,0 +1,209 @@
+user_prompt,schema,temperature,query
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT u.user_id, u.name, SUM(o.total_amount) AS total_spending
+FROM users u
+JOIN orders o ON u.user_id = o.user_id
+WHERE u.country = 'France'
+GROUP BY u.user_id, u.name
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT user_id, SUM(amount) AS total_spending
+FROM transactions
+WHERE user_id IN (
+    SELECT user_id
+    FROM users
+    WHERE country = 'France'
+)
+GROUP BY user_id
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT user_id, SUM(amount) AS total_spending
+FROM transactions
+WHERE country = 'France'
+GROUP BY user_id
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT user_id, SUM(amount) AS total_spending
+FROM transactions
+WHERE user_id IN (
+    SELECT user_id
+    FROM users
+    WHERE country = 'France'
+)
+GROUP BY user_id
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT u.user_id, u.user_name, SUM(o.total_amount) AS total_spending
+FROM Users u
+JOIN Orders o ON u.user_id = o.user_id
+WHERE u.country = 'France'
+GROUP BY u.user_id, u.user_name
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT u.user_id, u.name, SUM(o.amount) AS total_spending
+FROM users u
+JOIN orders o ON u.user_id = o.user_id
+WHERE u.country = 'France'
+GROUP BY u.user_id, u.name
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT user_id, SUM(amount) AS total_spending
+FROM Orders
+WHERE user_id IN (
+    SELECT id FROM Users WHERE country = 'France'
+)
+GROUP BY user_id
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT u.user_id, u.name, SUM(o.total_amount) AS total_spending
+FROM users u
+JOIN orders o ON u.user_id = o.user_id
+WHERE u.country = 'France'
+GROUP BY u.user_id, u.name
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT user_id, SUM(spending) AS total_spending
+FROM users
+WHERE country = 'France'
+GROUP BY user_id
+ORDER BY total_spending DESC
+LIMIT 5;"
+Show me the top 5 users from France by total spending,"
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        signup_date DATE,
+        country VARCHAR(50)
+    );
+
+    CREATE TABLE orders (
+        order_id INT PRIMARY KEY,
+        user_id INT,
+        amount DECIMAL(10, 2),
+        created_at DATETIME
+    );
+    ",0.7,"SELECT user_id, SUM(amount) AS total_spending
+FROM Transactions
+WHERE user_id IN (
+    SELECT user_id
+    FROM Users
+    WHERE country = 'France'
+)
+GROUP BY user_id
+ORDER BY total_spending DESC
+LIMIT 5;"
