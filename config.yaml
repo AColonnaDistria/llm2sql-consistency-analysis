@@ -1,0 +1,8 @@
+mysql:
+  host: localhost
+  user: llm_tester
+  database: llm_benchmark
+
+openai:
+  model: gpt-4o
+  max_tokens: 600
