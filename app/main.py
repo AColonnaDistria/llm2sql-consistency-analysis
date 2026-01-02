@@ -1,31 +1,27 @@
 from sql_generator import MySQLGenerator
 import pandas as pd
+import os
+
+from config_manager import ConfigManager
 
 def run():
-    test_schema = """
-    CREATE TABLE users (
-        user_id INT PRIMARY KEY,
-        name VARCHAR(100),
-        signup_date DATE,
-        country VARCHAR(50)
-    );
+    config = ConfigManager('config.yaml')
 
-    CREATE TABLE orders (
-        order_id INT PRIMARY KEY,
-        user_id INT,
-        amount DECIMAL(10, 2),
-        created_at DATETIME,
-        FOREIGN KEY (user_id) REFERENCES users(user_id)
-    );
-    """
+    with open('schema.sql') as schema_file:
+        schema = schema_file.read()
 
-    sqlGenerator = MySQLGenerator(seed=53, temperature=1.0)
+    print(schema)
+    
+    sqlGenerator = MySQLGenerator(
+        seed=config.get('openai.seed'), 
+        temperature=config.get('openai.temperature')
+    )
 
     print("--- Generating Queries ---")
     df = sqlGenerator.generate_queries(
-        user_prompt="Show me the top 5 users from France by total spending",
-        schema=test_schema,
-        size=10
+        user_prompt=config.get('openai.prompt'),
+        schema=schema,
+        size=config.get('openai.size', 1)
     )
 
     if df is not None and not df.empty:
@@ -33,7 +29,7 @@ def run():
         for query in df['query']:
             print(query + "\n")
         
-        df.to_csv("out/test_results.csv", index=False)
+        df.to_csv(f"out/{config.get('openai.output-file')}", index=False)
 
 
 if __name__ == "__main__":

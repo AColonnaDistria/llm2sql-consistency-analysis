@@ -5,3 +5,4 @@ sqlglot
 pandas
 PyMySQL
 ollama
+pyyaml

@@ -9,7 +9,10 @@ services:
       - db
     volumes:
       - ./app/out/:/app/out/
+      - ./app/cache/:/app/cache/
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     command: python main.py
+    working_dir: /app
   
   db:
     image: mysql:8.0
