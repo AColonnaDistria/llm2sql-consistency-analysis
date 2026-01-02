@@ -1,7 +1,7 @@
 from sql_generator import MySQLGenerator
 import pandas as pd
 
-if __name__ == "__main__":
+def run():
     test_schema = """
     CREATE TABLE users (
         user_id INT PRIMARY KEY,
@@ -19,21 +19,22 @@ if __name__ == "__main__":
     );
     """
 
-    sqlGenerator = MySQLGenerator(seed=53, temperature=1.2)
+    sqlGenerator = MySQLGenerator(seed=53, temperature=1.0)
 
     print("--- Generating Queries ---")
     df = sqlGenerator.generate_queries(
         user_prompt="Show me the top 5 users from France by total spending",
         schema=test_schema,
-        size=10  # Generate 10 variations
+        size=10
     )
 
-    # 6. Display Results
     if df is not None and not df.empty:
         print("\n--- Results ---")
         for query in df['query']:
             print(query + "\n")
         
         df.to_csv("test_results.csv", index=False)
-    else:
-        print("❌ No data generated.")
+
+
+if __name__ == "__main__":
+    run()

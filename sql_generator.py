@@ -1,5 +1,5 @@
 import pandas as pd
-from prompt_manager import PromptManager
+from prompt_manager import OpenaiPromptManager
 
 class MySQLGenerator:
     def __init__(self, system_prompt=None, seed=0, temperature=1.0, keeps_cache=True):
@@ -24,7 +24,7 @@ You are an expert MySQL Data Engineer. Your goal is to convert natural language 
         self.keeps_cache = keeps_cache
 
         self.system_prompt = system_prompt
-        self.prompt_manager = PromptManager(
+        self.prompt_manager = OpenaiPromptManager(
             seed=seed,
             keeps_cache=keeps_cache
         )
@@ -39,7 +39,8 @@ You are an expert MySQL Data Engineer. Your goal is to convert natural language 
             query = self.prompt_manager.get_response(
                 system_prompt = sys_prompt, 
                 user_prompt = user_prompt,
-                temperature = self.temperature
+                temperature = self.temperature,
+                model = "gpt-4o"
             )
 
             # Normalize the query
