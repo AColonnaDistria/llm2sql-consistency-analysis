@@ -33,7 +33,7 @@ def run():
         for query in df['query']:
             print(query + "\n")
         
-        df.to_csv("test_results.csv", index=False)
+        df.to_csv("out/test_results.csv", index=False)
 
 
 if __name__ == "__main__":
