@@ -40,7 +40,7 @@ You are an expert MySQL Data Engineer. Your goal is to convert natural language 
                 system_prompt = sys_prompt, 
                 user_prompt = user_prompt,
                 temperature = self.temperature,
-                model = "gpt-4o"
+                model = "gpt-4o-mini"
             )
 
             # Normalize the query

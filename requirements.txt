@@ -4,8 +4,8 @@ diskcache
 sqlglot
 pandas
 PyMySQL
-ollama
 pyyaml
 cryptography
 textdistance
-
+fastapi[standard]
+numpy

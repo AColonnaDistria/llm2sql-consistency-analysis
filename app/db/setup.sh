@@ -33,7 +33,4 @@ $MYSQL_CMD <<-EOSQL
     FLUSH PRIVILEGES;
 
     USE $MYSQL_DATABASE;
-
-    --- source app/db/schema.sql;
-    --- source app/db/insert.sql;
 EOSQL

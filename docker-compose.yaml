@@ -8,10 +8,12 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    ports:
+      - "$SERVER_PORT:8000"
     volumes:
       - ./app/out/:/app/out/
       - ./app/cache/:/app/cache/
-    command: python main.py
+    command: fastapi run server.py --port 8000
     working_dir: /app
   
   mysql:
@@ -32,8 +34,6 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./app/db/setup.sh:/docker-entrypoint-initdb.d/setup.sh:ro
-      - ./app/db/schema.sql:/app/db/schema.sql:ro
-      - ./app/db/insert.sql:/app/db/insert.sql:ro
     healthcheck:  
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
       interval: 5s

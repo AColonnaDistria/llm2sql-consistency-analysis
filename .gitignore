@@ -217,3 +217,8 @@ __marimo__/
 
 app/cache/*
 app/out/*
+
+app/cache
+app/out
+
+curl.sh

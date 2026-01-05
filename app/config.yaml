@@ -1,8 +1,6 @@
 openai:
-  model: gpt-4o
+  model: gpt-4o-mini
   max_tokens: 600
   seed: 53
-  prompt: "Show me the top 5 users from France by total spending"
-  size: 5
-  output-file: "test_results.csv"
   temperature: 1.0
+

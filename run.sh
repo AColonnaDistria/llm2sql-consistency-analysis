@@ -2,4 +2,4 @@ source .env
 source .venv/bin/activate
 
 cd app
-python3 main.py
+fastapi run server.py --port $SERVER_PORT
