@@ -5,4 +5,4 @@ openai:
   prompt: "Show me the top 5 users from France by total spending"
   size: 5
   output-file: "test_results.csv"
-  temperature: 1.0
+  temperature: 1.4

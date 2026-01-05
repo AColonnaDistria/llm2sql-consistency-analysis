@@ -11,8 +11,6 @@ def run():
 
     with open('db/schema.sql') as schema_file:
         schema = schema_file.read()
-
-    print(schema)
     
     sqlGenerator = MySQLGenerator(
         seed=config.get('openai.seed'), 
