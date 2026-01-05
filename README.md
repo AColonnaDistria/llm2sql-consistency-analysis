@@ -13,6 +13,7 @@ openai:
 ```
 
 ## Build & Run
+Start at the root of the project.
 
 Copy the .env.example file into .env :
 ```bash
@@ -31,10 +32,27 @@ MYSQL_DATABASE=llm_benchmark
 MYSQL_USERNAME=llm_tester
 MYSQL_PORT=3306
 ```
+
 You should provide your own OPENAI API KEY. The root password is only used when running through Docker.
 
 ## Build & Run (Docker)
+In order to run with docker, `docker compose v2` is required. 
 
+On Ubuntu, it can be access through your package manager:
+```bash
+sudo apt install docker-compose-v2
+```
+
+Then, you should run the following commands to create and run your Docker container:
+```bash
+docker compose up --build
+```
+
+If you edit the app/db/setup.sh file, you should run the following commands (otherwise the script won't run):
+```bash
+docker compose down -v
+docker compose up --build
+```
 
 ## Build & Run (natively)
 Firstly install all of the required dependencies using `pip`. You can use a virtual environment in `.venv`.
