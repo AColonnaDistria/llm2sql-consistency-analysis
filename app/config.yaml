@@ -1,5 +1,5 @@
 openai:
-  model: gpt-4o-mini
+  model: gpt-4o
   max_tokens: 600
   seed: 53
   temperature: 1.0

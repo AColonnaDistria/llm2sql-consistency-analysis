@@ -1,18 +1,34 @@
 ## Natural language to SQL - LLM analysis
-This project is an LLM-to-SQL analysis tool designed to quantify non-determinism behavior of LLMs.
-Hallucinations and unreliability of LLMs are a huge problem especially when dealing with sensible data.
+This project is an LLM-to-SQL analysis tool designed to quantify non-determinism behavior of LLMs and their correctness.
 
-Features:
+Hallucinations and unreliability of LLMs are a central problem for their industrial usage especially when dealing with sensible data.
+
+Features of the project:
 - Generate N version of SQL queries for the same prompt
 - Scoring: gives syntaxic and structural scores to show how much the candidates are far from each other.
-- Clusters: can group same candidates; AST levenhstein similarity scoring is used
-- Ambiguity: computes an ambiguity score
+- Clusters: can group same candidates if they are very similar; AST levenhstein similarity scoring is used
+- Ambiguity: computes an ambiguity score for each natural language request
 
 This project was inspired by an article about the non-determinism of LLMs when writing code.
 I have chosen to focus on SQL queries. The project uses `sqlglot` to parse the SQL code.
 
+## Architecture
+- API Layer (`server.py`): Exposes FastAPI endpoints to orchestrate the full pipeline from SQL generation to similarity analysis.
+- Config Manager (`config_manager.py`): Unified handler for retrieving settings from `config.yaml` with environment variable overrides.
+- Prompt Manager (`prompt_manager.py`): Provides an LLM abstraction layer with integrated disk-based caching for efficiency and reproducibility. **Warning**: `seed` config parameter does not guarantee reproducibility if the cache is not preserved.
+- SQL Generator (`sql_generator.py`): Converts natural language into MySQL-compliant queries using specialized system prompts and multi-candidate generation.
+- SQL Evaluator (`sql_evaluator.py`): Computes syntaxic and structural (AST) similarity scores, heatmaps, and clusters to quantify LLM non-determinism.
+- Schema Initializer (`sql_schema_init.py`): Manages the automated setup of the MySQL test environment, including database and table creation.
+- SQL Executor (`sql_executor.py`): Handles the direct execution of generated SQL queries against a MySQL database to fetch results. In order to avoid query poisoning, the LLM right now only have access to `SELECT` statements
+
 ## Requirements
 ```bash
+# Native packages
+docker
+docker-compose-v2
+mysql # if running natively
+
+# Pip packages
 openai
 dotenv
 diskcache
@@ -40,12 +56,12 @@ openai:
 ## Build & Run
 Start at the root of the project.
 
-Copy the .env.example file into .env :
+Copy the `.env.example` file into `.env` :
 ```bash
 cp .env.example .env
 ```
 
-and then edit the .env file :
+and then you can edit the `.env` file :
 
 ```bash
 OPENAI_API_KEY=YOUR_API_KEY
@@ -60,7 +76,7 @@ MYSQL_PORT=3306
 SERVER_PORT=8000
 ```
 
-You should provide your own OPENAI API KEY. The root password is only used when running through Docker.
+You should provide your own `OPENAI_API_KEY`. The root password is only used when running through Docker.
 
 ## Build & Run (Docker)
 In order to run with docker, `docker compose v2` is required. 
@@ -102,7 +118,7 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/score/" \
      -H "Content-Type: application/json" \
      -d '{
            "schema_db": "CREATE TABLE monthly_revenue (month_id INT, revenue DECIMAL(10,2));",
-           "number_of_candidates": 20,
+           "number_of_candidates": 10,
            "prompt": "What is the average monthly growth?",
            "expected_query": "SELECT AVG(diff) FROM (SELECT revenue - LAG(revenue) OVER (ORDER BY month_id) as diff FROM monthly_revenue)",
            "datasets": []
@@ -112,22 +128,21 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/score/" \
 curl -X POST "http://127.0.0.1:$SERVER_PORT/heatmap/" \
      -H "Content-Type: application/json" \
      -d '{
-           "schema_db": "CREATE TABLE monthly_revenue (month_id INT, revenue DECIMAL(10,2));",
-           "number_of_candidates": 20,
-           "prompt": "What is the average monthly growth?",
-           "expected_query": "SELECT AVG(diff) FROM (SELECT revenue - LAG(revenue) OVER (ORDER BY month_id) as diff FROM monthly_revenue)",
-           "datasets": []
+           ...
         }'
 
 # Extract clusters
 curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/" \
      -H "Content-Type: application/json" \
      -d '{
-           "schema_db": "CREATE TABLE monthly_revenue (month_id INT, revenue DECIMAL(10,2));",
-           "number_of_candidates": 20,
-           "prompt": "What is the average monthly growth?",
-           "expected_query": "SELECT AVG(diff) FROM (SELECT revenue - LAG(revenue) OVER (ORDER BY month_id) as diff FROM monthly_revenue)",
-           "datasets": []
+           ...
+        }'
+
+# Extract clusters representants (take only the first query of each cluster)
+curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/repr/" \
+     -H "Content-Type: application/json" \
+     -d '{
+           ...
         }'
 ```
 
@@ -135,9 +150,11 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/" \
 - Execution analysis (semantic analysis)
 - Verifying correctness & completedness
 - Generate or use a dataset and analyze the data
+- Visualization: create a small web application to showcase the API
 
 ## Ideas
-- Implementing a better similarity scoring that accounts for free variables (example `AS total_spending` vs `AS total_spent`)
+- Implementing a better similarity scoring that accounts for free variables (example: `AS total_spending` vs `AS total_spent`)
+- Treating update queries of databases
 - Disambiguation by rewriting user prompt
 - Trying to use smaller models
 - Possibly, looking at performance
