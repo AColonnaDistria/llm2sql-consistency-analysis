@@ -9,7 +9,7 @@ from sql_executor import MySQLExecutor
 def run():
     config = ConfigManager('config.yaml')
 
-    with open('schema.sql') as schema_file:
+    with open('db/schema.sql') as schema_file:
         schema = schema_file.read()
 
     print(schema)

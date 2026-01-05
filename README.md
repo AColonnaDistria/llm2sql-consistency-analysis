@@ -12,6 +12,8 @@ openai:
   temperature: 1.0
 ```
 
+You can edit the schema file, inside `app/db/schema.sql`.
+
 ## Build & Run
 Start at the root of the project.
 
@@ -48,7 +50,7 @@ Then, you should run the following commands to create and run your Docker contai
 docker compose up --build
 ```
 
-If you edit the app/db/setup.sh file, you should run the following commands (otherwise the script won't run):
+If you edit the schema file (inside `app/db/schema.sql`), you should run the following commands (otherwise the script won't run):
 ```bash
 docker compose down -v
 docker compose up --build
