@@ -1,11 +1,11 @@
 FROM python:3.11-slim
+ENV DOCKER_CONTAINER=1
+
 WORKDIR /app
-COPY app/ /app
 
 COPY requirements.txt .
-COPY config.yaml /app/config.yaml
-COPY db/schema.sql /app/schema.sql
-
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app/ /app
 
 CMD ["python", "main.py"]

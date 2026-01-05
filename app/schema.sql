@@ -1,3 +1,8 @@
+USE llm_benchmark;
+
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS orders;
+
 CREATE TABLE users (
     user_id INT PRIMARY KEY,
     name VARCHAR(100),

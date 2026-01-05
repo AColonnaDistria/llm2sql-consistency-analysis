@@ -6,3 +6,5 @@ pandas
 PyMySQL
 ollama
 pyyaml
+cryptography
+

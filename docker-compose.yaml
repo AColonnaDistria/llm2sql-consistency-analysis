@@ -6,23 +6,31 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      mysql:
+        condition: service_healthy
     volumes:
       - ./app/out/:/app/out/
       - ./app/cache/:/app/cache/
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     command: python main.py
     working_dir: /app
   
-  db:
+  mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_HOST: mysql
+      DOCKER_CONTAINER: 1
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
-
+      - ./app/db/setup.sh:/docker-entrypoint-initdb.d/setup.sh:ro
+    healthcheck:  
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      retries: 5
 volumes:
   db_data:

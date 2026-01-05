@@ -4,6 +4,8 @@ import os
 
 from config_manager import ConfigManager
 
+from sql_executor import MySQLExecutor
+
 def run():
     config = ConfigManager('config.yaml')
 
@@ -31,6 +33,22 @@ def run():
         
         df.to_csv(f"out/{config.get('openai.output-file')}", index=False)
 
+    print("--- Execute queries ---")
+
+    if os.getenv('DOCKER_CONTAINER') == '1':
+        host = 'mysql'
+    else:
+        host = 'localhost'
+
+    sqlExecutor = MySQLExecutor(
+        host=host,
+        user=config.get('mysql.username'),
+        database=config.get('mysql.database'),
+        password=config.get('mysql.password')
+    )
+
+    for query in df['query']:
+        print(sqlExecutor.run_query(query))
 
 if __name__ == "__main__":
     run()
