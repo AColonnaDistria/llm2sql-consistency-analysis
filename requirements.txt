@@ -7,4 +7,5 @@ PyMySQL
 ollama
 pyyaml
 cryptography
+textdistance
 

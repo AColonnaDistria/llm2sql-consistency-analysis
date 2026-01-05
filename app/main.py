@@ -6,6 +6,8 @@ from config_manager import ConfigManager
 
 from sql_executor import MySQLExecutor
 
+from sql_evaluator import SQLSyntaxicEvaluator, SQLStructuralEvaluator, SQLValidityEvaluator
+
 def run():
     config = ConfigManager('config.yaml')
 
@@ -47,6 +49,30 @@ def run():
 
     for query in df['query']:
         print(sqlExecutor.run_query(query))
+
+    print("--- Evaluate queries ---")
+    print("--- Validity ---")
+
+    sqlValidityEvaluator = SQLValidityEvaluator(df['query'])
+    print(sqlValidityEvaluator.parsable_scores())
+
+    print("--- Syntaxic ---")
+
+    sqlSyntaxicEvaluator = SQLSyntaxicEvaluator(df['query'])
+
+    print("--- Exact matches ---")
+    print(sqlSyntaxicEvaluator.exact_matches())
+
+    print("--- Levenhstein ---")
+    levenhstein_heatmap = sqlSyntaxicEvaluator.levenhstein_normalized()
+    print(levenhstein_heatmap)
+
+    sqlStructuralEvaluator = SQLStructuralEvaluator(df['query'])
+    print("--- Exact matches ---")
+    print(sqlStructuralEvaluator.exact_matches())
+
+    print("--- Levenshtein ---")
+    print(sqlStructuralEvaluator.levenhstein_normalized())
 
 if __name__ == "__main__":
     run()

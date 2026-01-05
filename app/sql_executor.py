@@ -4,6 +4,9 @@ import os
 import pymysql
 import pymysql.cursors
 
+import sqlglot
+from sqlglot.errors import ParseError, TokenError  # Import both
+
 load_dotenv()
 
 class MySQLExecutor:
@@ -21,12 +24,24 @@ class MySQLExecutor:
                             charset='utf8mb4',
                             cursorclass=pymysql.cursors.DictCursor)
 
-    def run_query(self, query: str):
-        connection = self.__make_connection()
-        
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query)
-                result = cursor.fetchall()
+    def __is_parsable_sql(self, query: str) -> bool:
+        try:
+            sqlglot.parse_one(query)
+            return True
+        except SqlglotError:
+            return False
 
-        return result
+    def run_query(self, query: str):
+        try:
+            if self.__is_parsable_sql(query):
+                connection = self.__make_connection()
+                
+                with connection:
+                    with connection.cursor() as cursor:
+                        cursor.execute(query)
+                        result = cursor.fetchall()
+                return result
+            else:
+                return None
+        except Exception:
+            return None

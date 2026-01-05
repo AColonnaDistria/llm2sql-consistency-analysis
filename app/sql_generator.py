@@ -52,7 +52,7 @@ You are an expert MySQL Data Engineer. Your goal is to convert natural language 
             return None
 
     """Generate a SQL dataframe corresponding to the prompt"""
-    def generate_queries(self, user_prompt: str, schema: str, size: int = 1) -> str:
+    def generate_queries(self, user_prompt: str, schema: str, size: int = 1) -> pd.DataFrame:
         try:
             sys_prompt = self.system_prompt.format(schema = schema)
             responses = []
