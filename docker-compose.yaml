@@ -20,6 +20,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_USER: ${MYSQL_USERNAME}
+
+      MYSQL_ADMIN_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      MYSQL_ADMIN_USER: ${MYSQL_ADMIN_USERNAME}
+      
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_HOST: mysql
       DOCKER_CONTAINER: 1
@@ -29,6 +33,7 @@ services:
       - db_data:/var/lib/mysql
       - ./app/db/setup.sh:/docker-entrypoint-initdb.d/setup.sh:ro
       - ./app/db/schema.sql:/app/db/schema.sql:ro
+      - ./app/db/insert.sql:/app/db/insert.sql:ro
     healthcheck:  
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
       interval: 5s

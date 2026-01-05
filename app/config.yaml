@@ -6,4 +6,3 @@ openai:
   size: 5
   output-file: "test_results.csv"
   temperature: 1.0
-

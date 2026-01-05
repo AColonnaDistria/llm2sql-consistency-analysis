@@ -3,16 +3,33 @@ import pandas as pd
 import os
 
 from config_manager import ConfigManager
-
 from sql_executor import MySQLExecutor
-
 from sql_evaluator import SQLSyntaxicEvaluator, SQLStructuralEvaluator, SQLValidityEvaluator
+from sql_schema_init import MySQLSchemaInitializer
 
 def run():
     config = ConfigManager('config.yaml')
+    if os.getenv('DOCKER_CONTAINER') == '1':
+        host = 'mysql'
+    else:
+        host = 'localhost'
 
     with open('db/schema.sql') as schema_file:
         schema = schema_file.read()
+
+    with open('db/insert.sql') as insert_file:
+        insert = insert_file.read()
+
+    print("--- Initialize Database ---")
+    sqlInitializer = MySQLSchemaInitializer(
+        host=host,
+        admin_user=config.get('mysql.admin.username'),
+        admin_password=config.get('mysql.admin.password'),
+        database=config.get('mysql.database'),
+    )
+
+    sqlInitializer.set_schema(schema)
+    sqlInitializer.insert_data(insert)
     
     sqlGenerator = MySQLGenerator(
         seed=config.get('openai.seed'), 
@@ -34,11 +51,6 @@ def run():
         df.to_csv(f"out/{config.get('openai.output-file')}", index=False)
 
     print("--- Execute queries ---")
-
-    if os.getenv('DOCKER_CONTAINER') == '1':
-        host = 'mysql'
-    else:
-        host = 'localhost'
 
     sqlExecutor = MySQLExecutor(
         host=host,
@@ -67,11 +79,13 @@ def run():
     levenhstein_heatmap = sqlSyntaxicEvaluator.levenhstein_normalized()
     print(levenhstein_heatmap)
 
+    print("--- Structural ---")
+
     sqlStructuralEvaluator = SQLStructuralEvaluator(df['query'])
     print("--- Exact matches ---")
     print(sqlStructuralEvaluator.exact_matches())
 
-    print("--- Levenshtein ---")
+    print("--- Levenhstein ---")
     print(sqlStructuralEvaluator.levenhstein_normalized())
 
 if __name__ == "__main__":
