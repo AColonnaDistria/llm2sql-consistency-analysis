@@ -33,7 +33,7 @@ class EvaluateRequestBody(BaseModel):
     prompt: str
     datasets: list
 
-@app.post("/heatmap/")
+@app.post("/heatmap")
 async def evaluate(body: EvaluateRequestBody):
     try:
         parsed = sqlglot.parse(body.schema_db)
@@ -116,7 +116,7 @@ async def evaluateSummary(body: EvaluateRequestBody):
         
         raise HTTPException(status_code=400, detail=f"Invalid SQL Syntax: {str(e)}")
 
-@app.post("/clusters/")
+@app.post("/clusters")
 async def findClusters(body: EvaluateRequestBody):
     try:
         parsed = sqlglot.parse(body.schema_db)
@@ -145,7 +145,7 @@ async def findClusters(body: EvaluateRequestBody):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid SQL Syntax: {str(e)}")
 
-@app.post("/clusters/repr/")
+@app.post("/clusters/repr")
 async def findClustersRepresentants(body: EvaluateRequestBody):
     try:
         parsed = sqlglot.parse(body.schema_db)
