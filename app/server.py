@@ -36,9 +36,6 @@ async def evaluate(body: EvaluateRequestBody):
     try:
         parsed = sqlglot.parse(body.schema_db)
 
-        # Compute candidates
-        print("--- Generating Queries ---")
-
         sqlGenerator = MySQLGenerator(
             seed=config.get('openai.seed'), 
             temperature=config.get('openai.temperature')
@@ -49,12 +46,6 @@ async def evaluate(body: EvaluateRequestBody):
             schema=body.schema_db,
             size=body.number_of_candidates
         )
-
-        candidates = df['query']
-        for query in candidates:
-            print(query + "\n")
-            
-        print("--- Syntaxic ---")
 
         sqlSyntaxicEvaluator = SQLSyntaxicEvaluator(candidates)
         exact_matches = sqlSyntaxicEvaluator.exact_matches()
@@ -87,9 +78,6 @@ async def evaluateSummary(body: EvaluateRequestBody):
     try:
         parsed = sqlglot.parse(body.schema_db)
 
-        # Compute candidates
-        print("--- Generating Queries ---")
-
         sqlGenerator = MySQLGenerator(
             seed=config.get('openai.seed'), 
             temperature=config.get('openai.temperature')
@@ -100,12 +88,6 @@ async def evaluateSummary(body: EvaluateRequestBody):
             schema=body.schema_db,
             size=body.number_of_candidates
         )
-
-        candidates = df['query']
-        for query in candidates:
-            print(query + "\n")
-            
-        print("--- Syntaxic ---")
 
         sqlSyntaxicEvaluator = SQLSyntaxicEvaluator(candidates)
         exact_matches_score = sqlSyntaxicEvaluator.exact_matches_score()
@@ -134,8 +116,6 @@ async def findClusters(body: EvaluateRequestBody):
         parsed = sqlglot.parse(body.schema_db)
 
         # Compute candidates
-        print("--- Generating Queries ---")
-
         sqlGenerator = MySQLGenerator(
             seed=config.get('openai.seed'), 
             temperature=config.get('openai.temperature')
@@ -147,10 +127,6 @@ async def findClusters(body: EvaluateRequestBody):
             size=body.number_of_candidates
         )
 
-        candidates = df['query']
-        for query in candidates:
-            print(query + "\n")
-            
         sqlStructuralEvaluator = SQLStructuralEvaluator(candidates)
         levenhstein_clusters = sqlStructuralEvaluator.extract_levenhstein_clusters()
     
@@ -167,8 +143,6 @@ async def findClustersRepresentants(body: EvaluateRequestBody):
         parsed = sqlglot.parse(body.schema_db)
 
         # Compute candidates
-        print("--- Generating Queries ---")
-
         sqlGenerator = MySQLGenerator(
             seed=config.get('openai.seed'), 
             temperature=config.get('openai.temperature')
@@ -180,10 +154,6 @@ async def findClustersRepresentants(body: EvaluateRequestBody):
             size=body.number_of_candidates
         )
 
-        candidates = df['query']
-        for query in candidates:
-            print(query + "\n")
-            
         sqlStructuralEvaluator = SQLStructuralEvaluator(candidates)
         levenhstein_clusters = sqlStructuralEvaluator.extract_levenhstein_clusters()
 
