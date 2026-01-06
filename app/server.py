@@ -10,6 +10,8 @@ from sql_generator import MySQLGenerator
 from sql_evaluator import SQLSyntaxicEvaluator, SQLStructuralEvaluator
 from config_manager import ConfigManager
 
+import traceback
+
 import os
 
 app = FastAPI()
@@ -22,7 +24,7 @@ else:
     
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {}
 
 class EvaluateRequestBody(BaseModel):
     schema_db: str
@@ -31,7 +33,7 @@ class EvaluateRequestBody(BaseModel):
     prompt: str
     datasets: list
 
-@app.post("/heatmap")
+@app.post("/heatmap/")
 async def evaluate(body: EvaluateRequestBody):
     try:
         parsed = sqlglot.parse(body.schema_db)
@@ -46,6 +48,8 @@ async def evaluate(body: EvaluateRequestBody):
             schema=body.schema_db,
             size=body.number_of_candidates
         )
+
+        candidates = df['query']
 
         sqlSyntaxicEvaluator = SQLSyntaxicEvaluator(candidates)
         exact_matches = sqlSyntaxicEvaluator.exact_matches()
@@ -73,11 +77,9 @@ async def evaluate(body: EvaluateRequestBody):
         raise HTTPException(status_code=400, detail=f"Invalid SQL Syntax: {str(e)}")
 
 
-@app.post("/score/")
+@app.post("/score")
 async def evaluateSummary(body: EvaluateRequestBody):
     try:
-        parsed = sqlglot.parse(body.schema_db)
-
         sqlGenerator = MySQLGenerator(
             seed=config.get('openai.seed'), 
             temperature=config.get('openai.temperature')
@@ -89,6 +91,8 @@ async def evaluateSummary(body: EvaluateRequestBody):
             size=body.number_of_candidates
         )
 
+        candidates = df['query']
+    
         sqlSyntaxicEvaluator = SQLSyntaxicEvaluator(candidates)
         exact_matches_score = sqlSyntaxicEvaluator.exact_matches_score()
         levenhstein_score = sqlSyntaxicEvaluator.levenhstein_normalized_score()
@@ -108,6 +112,8 @@ async def evaluateSummary(body: EvaluateRequestBody):
             "ambiguity_score": ambiguity_score
         }
     except Exception as e:
+        print(traceback.format_exc())
+        
         raise HTTPException(status_code=400, detail=f"Invalid SQL Syntax: {str(e)}")
 
 @app.post("/clusters/")
@@ -126,6 +132,8 @@ async def findClusters(body: EvaluateRequestBody):
             schema=body.schema_db,
             size=body.number_of_candidates
         )
+
+        candidates = df['query']
 
         sqlStructuralEvaluator = SQLStructuralEvaluator(candidates)
         levenhstein_clusters = sqlStructuralEvaluator.extract_levenhstein_clusters()
@@ -154,6 +162,8 @@ async def findClustersRepresentants(body: EvaluateRequestBody):
             size=body.number_of_candidates
         )
 
+        candidates = df['query']
+        
         sqlStructuralEvaluator = SQLStructuralEvaluator(candidates)
         levenhstein_clusters = sqlStructuralEvaluator.extract_levenhstein_clusters()
 

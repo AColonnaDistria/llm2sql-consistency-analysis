@@ -77,10 +77,10 @@ class SQLSyntaxicEvaluator(SQLEvaluator):
         super().__init__(candidates)
 
     def exact_matches(self) -> pd.DataFrame:
-        return self.get_heatmap(self.__match)
+        return self.get_heatmap(self._match)
 
     def levenhstein_normalized(self) -> pd.DataFrame:
-        return self.get_heatmap(self.__levenhstein_distance_normalized)
+        return self.get_heatmap(self._levenhstein_distance_normalized)
 
     def exact_matches_score(self) -> float:
         return self.get_heatmap_score(self.exact_matches())
@@ -90,10 +90,10 @@ class SQLSyntaxicEvaluator(SQLEvaluator):
 
     """PRIVATE"""
 
-    def __match(self, s1: str, s2: str) -> float:
+    def _match(self, s1: str, s2: str) -> float:
         return 1.0 if (s1 == s2) else 0.0
 
-    def __levenhstein_distance_normalized(self, s1: str, s2: str) -> float:
+    def _levenhstein_distance_normalized(self, s1: str, s2: str) -> float:
         words_s1 = s1.split()
         words_s2 = s2.split()
 
