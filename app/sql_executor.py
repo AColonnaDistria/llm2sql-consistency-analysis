@@ -29,6 +29,7 @@ class MySQLExecutor:
             sqlglot.parse_one(query)
             return True
         except SqlglotError:
+            print("NOT PARSABLE")
             return False
 
     def run_query(self, query: str):
@@ -40,6 +41,8 @@ class MySQLExecutor:
                     with connection.cursor() as cursor:
                         cursor.execute(query)
                         result = cursor.fetchall()
+                    connection.commit()
+                
                 return result
             else:
                 return None

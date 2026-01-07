@@ -7,10 +7,8 @@ import numpy as np
 
 from sql_schema_init import MySQLSchemaInitializer
 from sql_generator import MySQLGenerator
-from sql_evaluator import SQLSyntaxicEvaluator, SQLStructuralEvaluator
+from sql_evaluator import SQLSyntaxicEvaluator, SQLStructuralEvaluator, SQLSemanticEvaluator
 from config_manager import ConfigManager
-
-import traceback
 
 import os
 
@@ -28,10 +26,11 @@ async def root():
 
 class EvaluateRequestBody(BaseModel):
     schema_db: str
+    tables: list
     number_of_candidates: int
     expected_query: str
     prompt: str
-    datasets: list
+    tests: list
 
 @app.post("/heatmap")
 async def evaluate(body: EvaluateRequestBody):
@@ -77,9 +76,46 @@ async def evaluate(body: EvaluateRequestBody):
         raise HTTPException(status_code=400, detail=f"Invalid SQL Syntax: {str(e)}")
 
 
+@app.post("/semantic")
+async def evaluateSemantic(body: EvaluateRequestBody):
+    try:
+        sqlGenerator = MySQLGenerator(
+            seed=config.get('openai.seed'), 
+            temperature=config.get('openai.temperature')
+        )
+
+        df = sqlGenerator.generate_queries(
+            user_prompt=body.prompt,
+            schema=body.schema_db,
+            size=body.number_of_candidates
+        )
+
+        candidates = df['query']
+    
+        sqlSemanticEvaluator = SQLSemanticEvaluator(
+            candidates,
+            body.schema_db,
+            body.tables,
+            body.tests,
+            config,
+            host
+        )
+
+        results = sqlSemanticEvaluator.run_tests()
+
+        return {
+            "candidates": candidates,
+            "results": results
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid SQL Syntax: {str(e)}")
+
+
 @app.post("/score")
 async def evaluateSummary(body: EvaluateRequestBody):
     try:
+        parsed = sqlglot.parse(body.schema_db)
+
         sqlGenerator = MySQLGenerator(
             seed=config.get('openai.seed'), 
             temperature=config.get('openai.temperature')
@@ -112,8 +148,6 @@ async def evaluateSummary(body: EvaluateRequestBody):
             "ambiguity_score": ambiguity_score
         }
     except Exception as e:
-        print(traceback.format_exc())
-        
         raise HTTPException(status_code=400, detail=f"Invalid SQL Syntax: {str(e)}")
 
 @app.post("/clusters")

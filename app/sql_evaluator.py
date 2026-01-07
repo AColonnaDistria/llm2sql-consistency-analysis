@@ -3,6 +3,9 @@ import textdistance
 import sqlglot
 import numpy as np
 
+from sql_executor import MySQLExecutor
+from sql_schema_init import MySQLSchemaInitializer
+
 class SQLEvaluator:
     """PUBLIC"""
 
@@ -199,3 +202,62 @@ class SQLStructuralEvaluator(SQLEvaluator):
         max_len = max(len(t1), len(t2))
 
         return textdistance.levenshtein.distance(t1, t2) / max_len
+
+class SQLSemanticEvaluator(SQLEvaluator):
+    """PUBLIC"""
+
+    def __init__(self, candidates, schema, tables, tests, config, host):
+        super().__init__(candidates)
+
+        self.tests = tests
+        self.llm_sql_executor = MySQLExecutor(
+            host=host,
+            user=config.get('mysql.username'),
+            password=config.get('mysql.password'),
+            database=config.get('mysql.database')
+        )
+
+        self.admin_initializer = MySQLSchemaInitializer(
+            host=host,
+            admin_user=config.get('mysql.admin_username'),
+            admin_password=config.get('mysql.admin_password'),
+            database=config.get('mysql.database')
+        )
+    
+        self.schema = schema
+        self.tables = tables
+        self.candidates = candidates
+        self.tests = tests
+
+    def run_tests(self):
+        index_candidates = [f"Query{i}" for i in range(len(self.candidates))]
+        index_tests = [f"Test{j}" for j in range(len(self.tests))]
+
+        results = {}
+
+        for j in range(len(self.tests)):
+            test = self.tests[j]
+            index_test = index_tests[j]
+
+            # RUN SCHEMA
+            self.admin_initializer.set_schema(self.schema)
+                    
+            results[index_test] = {}
+            for i in range(len(self.candidates)):
+                # CLEAR
+                # TODO: give involved tables and clear them
+                for table in self.tables:
+                    self.admin_initializer.set_schema(f"DELETE FROM {table};")
+                self.admin_initializer.set_schema("DELETE FROM monthly_revenue;")
+                # INSERT DATA
+                self.admin_initializer.insert_data(test)
+
+                candidate = self.candidates[i]
+                index_candidate = index_candidates[i]
+
+                results[index_test][index_candidate] = self.llm_sql_executor.run_query(candidate)
+
+        return results
+        
+
+    

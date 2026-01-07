@@ -28,29 +28,21 @@ class MySQLSchemaInitializer:
         try:
             connection = self.__make_connection()
             
-            statements = [s.strip() for s in schema.split(";\n") if s.strip()]
-
             with connection:
                 with connection.cursor() as cursor:
-                    for statement in statements:
-                        cursor.execute(statement)
-                    result = cursor.fetchall()
-            return result
+                    cursor.execute(schema)
+                connection.commit()
         except Exception as e:
-            print(e)
-            return None
+            return
 
     def insert_data(self, insert: str):
         try:
             connection = self.__make_connection()
             
-            statements = [s.strip() for s in insert.split(";\n") if s.strip()]
-
             with connection:
                 with connection.cursor() as cursor:
-                    for statement in statements:
-                        cursor.execute(statement)
-                    result = cursor.fetchall()
-            return result
-        except Exception:
-            return None
+                    cursor.execute(insert)
+                connection.commit()
+        except Exception as e:
+            print(str(e))
+            return
