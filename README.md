@@ -118,6 +118,7 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/score/" \
      -H "Content-Type: application/json" \
      -d '{
            "schema_db": "CREATE TABLE monthly_revenue (month_id INT, revenue DECIMAL(10,2));",
+           "tables": ["monthly_revenue"],
            "number_of_candidates": 10,
            "prompt": "What is the average monthly growth?",
            "expected_query": "SELECT AVG(diff) FROM (SELECT revenue - LAG(revenue) OVER (ORDER BY month_id) as diff FROM monthly_revenue)",
@@ -125,21 +126,28 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/score/" \
         }'
 
 # See heatmaps of similarity
-curl -X POST "http://127.0.0.1:$SERVER_PORT/heatmap/" \
+curl -X POST "http://127.0.0.1:$SERVER_PORT/heatmap" \
+     -H "Content-Type: application/json" \
+     -d '{
+           ...
+        }'
+
+# See semantic tests results
+curl -X POST "http://127.0.0.1:$SERVER_PORT/semantic" \
      -H "Content-Type: application/json" \
      -d '{
            ...
         }'
 
 # Extract clusters
-curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/" \
+curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters" \
      -H "Content-Type: application/json" \
      -d '{
            ...
         }'
 
 # Extract clusters representants (take only the first query of each cluster)
-curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/repr/" \
+curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/repr" \
      -H "Content-Type: application/json" \
      -d '{
            ...
@@ -147,7 +155,6 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/repr/" \
 ```
 
 ## TODO
-- Execution analysis (semantic analysis)
 - Verifying correctness & completedness
 - Generate or use a dataset and analyze the data
 - Visualization: create a small web application to showcase the API
@@ -156,8 +163,8 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/repr/" \
 - Implementing a better similarity scoring that accounts for free variables (example: `AS total_spending` vs `AS total_spent`)
 - Treating update queries of databases
 - Disambiguation by rewriting user prompt
-- Trying to use smaller models
-- Possibly, looking at performance
+- Trying to use smaller models (`ollama` integration)
+- Possibly, evaluating performance
 - Comparing to NoSQL solutions (MongoDB)
 
 ## References
