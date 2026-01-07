@@ -114,7 +114,7 @@ sudo ./setup.sh
 source .env
 
 # See similarity scores
-curl -X POST "http://127.0.0.1:$SERVER_PORT/score/" \
+curl -X POST "http://127.0.0.1:$SERVER_PORT/score" \
      -H "Content-Type: application/json" \
      -d '{
            "schema_db": "CREATE TABLE monthly_revenue (month_id INT, revenue DECIMAL(10,2));",
