@@ -169,3 +169,8 @@ curl -X POST "http://127.0.0.1:$SERVER_PORT/clusters/repr" \
 
 ## References
 Inspired by this article: https://deepai.org/publication/llm-is-like-a-box-of-chocolates-the-non-determinism-of-chatgpt-in-code-generation
+
+## Demo
+
+[![Watch the video](https://img.youtube.com/vi/6XvWHZ-7bis/maxresdefault.jpg)](https://youtu.be/6XvWHZ-7bis)
+
