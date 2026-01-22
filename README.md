@@ -172,5 +172,5 @@ Inspired by this article: https://deepai.org/publication/llm-is-like-a-box-of-ch
 
 ## Demo
 
-[![Watch the video](https://img.youtube.com/vi/6XvWHZ-7bis/maxresdefault.jpg)](https://youtu.be/6XvWHZ-7bis)
+[![Watch the video](readme-images/demo.png)](https://youtu.be/6XvWHZ-7bis)
 
